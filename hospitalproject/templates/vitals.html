@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block content %}
+ <div class="container mt-3">
+<h3 class="alert alert-info text-center">Vital Master</h3>
+{% for message in messages %}
+<p class="alert alert-success mt-3">{{message}}</p>
+{% endfor %}
+ </div>
+<div class="container mt-3">
+<form method="post" action="{% url 'patientapp:add_vitals' %}">
+    {% csrf_token %}
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="prescriptionno">Prescription No:</label>
+                    <input type="text" class="form-control" name="prescriptionno" value="{{ series_code }}" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label for="date">Date</label>
+                    <input type="date" class="form-control" name="date" value="{{ today_date }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="patientid">Patient Id</label>
+                    <input type="text" class="form-control" name="patientid" id="patientid" list="patient" oninput="updatePatientInfo(this)" placeholder="Patient ID">
+                    <datalist id="patient">
+        {% for p in patient %}
+            <option value="{{ p.patientid }}" data-patientname="{{ p.patientname }}" data-age="{{ p.age }}">
+        {% endfor %}
+    </datalist>
+                </div>
+                <div class="col-md-3">
+                    <label for="patientname">Patient Name</label>
+                    <input type="text" class="form-control" name="patientname" id="patientname" readonly>
+                </div></div>
+                <div class="row">
+                 <div class="col-md-3">
+                    <label for="age">Age</label>
+                    <input type="text" class="form-control" name="age" id="age" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label for="doctorname">Doctor Name</label>
+                    <input type="text" class="form-control" name="doctorname" list="doctor" placeholder="Name of the Doctor">
+                    <datalist id="doctor">
+    {% for doc in doctor %}
+        <option value="{{ doc.doctorname }}">
+    {% endfor %}
+</datalist>
+                </div>
+                <div class="col-md-3">
+                    <label for="tempreature">Temperature</label>
+                    <input type="text" class="form-control" name="temperature" placeholder="Temperature">
+                </div>
+                <div class="col-md-3">
+                    <label for="Diastolicbp">Diastolic BP</label>
+                    <input type="text" class="form-control" name="dbp" placeholder="Diastolic BP">
+                </div></div>
+                     <div class="row">
+                <div class="col-md-3">
+                    <label for="resrate">Respiratory Rate</label>
+                    <input type="text" class="form-control" name="resrate" placeholder="Respiratory Rate">
+                </div>
+                <div class="col-md-3">
+                    <label for="height">Height</label>
+                    <input type="text" class="form-control" name="height" id="height" placeholder="Height in cm" oninput="calculateBMI()">
+                </div>
+                <div class="col-md-3">
+                    <label for="spo">Spo2</label>
+                    <input type="text" class="form-control" name="spo2" placeholder="spo2">
+                </div>
+                <div class="col-md-3">
+                    <label for="systolicbp">Systolic BP</label>
+                    <input type="text" class="form-control" name="sbp" placeholder="Systolic BP">
+                </div></div>
+      <div class="row">
+                <div class="col-md-3">
+                    <label for="pulserate">Pulse Rate</label>
+                    <input type="text" class="form-control" name="pulserate" placeholder="Pulse Rate">
+                </div>
+                <div class="col-md-3">
+                    <label for="weight">Height</label>
+                    <input type="text" class="form-control" name="weight" id="weight" placeholder="Weight in Kg" oninput="calculateBMI()">
+                </div>
+                <div class="col-md-3">
+                    <label for="bmi">BMI</label>
+                    <input type="text" class="form-control" name="bmi" id="bmi" readonly>
+                </div>
+                <div class="col-md-3">
+                    <br>
+                     <button type="submit" class="btn btn-success">Add vitals</button>
+                </div></div>
+</div>
+</form>
+<h3 class="text-center alert alert-info">Show Patient Vital Information</h3>
+<div class="container mt-3" style="max-height: 300px; overflow-y: auto;">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th scope="col">Sl.no</th>
+            <th scope="col">Prescription Number</th>
+             <th scope="col">Doctor Name</th>
+            <th scope="col">Tempreature</th>
+            <th scope="col">Diastolic BP</th>
+            <th scope="col">Respiratory Rate</th>
+            <th scope="col">Spo2</th>
+             <th scope="col">Systolic BP</th>
+            <th scope="col">Pulse Rate</th>
+            <th scope="col">BMI</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for v in vitals %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{v.prescriptionno}}</td>
+            <td>{{v.doctorname}}</td>
+            <td>{{v.temperature}}</td>
+            <td>{{v.dbp}}</td>
+            <td>{{v.resrate}}</td>
+            <td>{{v.spo2}}</td>
+            <td>{{v.sbp}}</td>
+             <td>{{v.pulserate}}</td>
+            <td>{{v.bmi}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+function updatePatientInfo(inputElement) {
+    var selectedOption = document.querySelector('datalist#patient option[value="' + inputElement.value + '"]');
+    var patientNameInput = document.getElementById('patientname');
+    var ageInput = document.getElementById('age');
+     console.log("Debug: Input Value - " + inputElement.value);
+    if (selectedOption) {
+        console.log("Debug: Selected Option Found");
+        patientNameInput.value = selectedOption.getAttribute('data-patientname');
+        ageInput.value = selectedOption.getAttribute('data-age');
+    } else {
+        console.log("Debug: No Matching Option Found");
+        patientNameInput.value = '';
+        ageInput.value = '';
+    }
+}
+</script>
+<script>
+function calculateBMI() {
+    var heightInput = document.getElementById('height');
+    var weightInput = document.getElementById('weight');
+    var bmiInput = document.getElementById('bmi');
+    var height = parseFloat(heightInput.value) / 100;
+    var weight = parseFloat(weightInput.value);
+    if (!isNaN(height) && !isNaN(weight) && height > 0 && weight > 0) {
+        var bmi = weight / (height * height);
+        bmiInput.value = bmi.toFixed(2);
+    } else {
+        bmiInput.value = '';
+    }
+}
+</script>
+{% endblock %}

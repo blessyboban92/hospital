@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block styles %}
+    <style>
+        .container-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background-color: #f0f0f0; /* Set your desired background color */
+    }
+
+        .container {
+            background-color: #29B0B9 ; /* Set your desired container background color */
+            padding: 20px;
+            border-radius: 8px;
+            width: 60%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            margin-bottom: 8px;
+        }
+
+        input {
+            margin-bottom: 16px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4caf50; /* Set your desired button background color */
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049; /* Change color on hover if needed */
+        }
+    </style>
+{% endblock %}
+{% block content %}
+<div class="container-wrapper">
+ <div class="container">
+    <form method="post" action="{% url 'patientapp:view_patient_report' %}">
+        {% csrf_token %}
+        <label for="patientid">Enter Patient ID:</label>
+        <input type="text" id="patientid" name="patientid" required>
+        <label for="date">Select Date:</label>
+        <input type="date" id="date" name="date" required>
+        <button type="submit">View Report</button>
+    </form>
+ </div>
+</div>
+{% endblock %}

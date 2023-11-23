@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-3">
+    {% for message in messages %}
+        <p class="alert alert-success mt-3">{{ message }}</p>
+    {% endfor %}
+    <div class="row">
+        <div class="col-sm-4">
+            <h3 class="alert alert-info text-center">Category Master</h3>
+            {% if sel_categories %}
+                <form action="{% url 'hiapp:update_category' sel_categories.id %}" method="post">
+                    {% csrf_token %}
+                    <div>
+                        <label for="categoryname">Category Name</label>
+                        <input name="categoryname" class="form-control" placeholder="Category Name" value="{{ sel_categories.categoryname }}" type="text">
+                    </div>
+                    <div>
+                        <label for="categorydescription">Category Description</label>
+                        <textarea name="categorydescription" class="form-control" placeholder="Category Description" type="text">{{ sel_categories.categorydescription }}</textarea>
+                    </div><br>
+                    <div>
+                        <button type="submit" class="btn btn-success">Update Category</button>
+                    </div>
+                </form>
+            {% else %}
+                <form action="{% url 'hiapp:add_category' %}" method="post">
+                    {% csrf_token %}
+                            <div>
+                                <label for="categoryname">Category Name</label>
+                                <input name="categoryname" class="form-control" placeholder="Category Name" type="text">
+                            </div>
+                            <div>
+                                <label for="categorydescription">Category Description</label>
+                                <textarea name="categorydescription" class="form-control" placeholder="Category Description" type="text"></textarea>
+                            </div><br>
+                            <div>
+                                <button type="submit" class="btn btn-success">Add Category</button>
+                            </div>
+                </form>
+            {% endif %}
+        </div>
+        <div class="col-sm-8">
+            <h3 class="text-center alert alert-info">Show Category Information</h3>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Sl.No</th>
+                        <th scope="col">Category Name</th>
+                        <th scope="col">Category Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in categories %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ c.categoryname }}</td>
+                            <td>{{ c.categorydescription }}</td>
+                            <td><a href="{% url 'hiapp:edit_category' c.id %}" class="btn btn-warning btn-sm">Edit</a></td>
+                            <td><a href="{% url 'hiapp:delete_category' c.id %}" class="btn btn-danger btn-sm delete-button">Delete</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div></div>
+    </div>
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const deleteButtons = document.querySelectorAll(".delete-button");
+    deleteButtons.forEach(function (button) {
+      button.addEventListener("click", function (event) {
+        event.preventDefault();
+        const confirmation = confirm("Are you sure you want to delete?");
+        if (confirmation) {
+          window.location = event.target.href;
+        }
+      });
+    });
+  });
+  </script>
+ {% endblock %}

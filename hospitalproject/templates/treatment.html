@@ -1,0 +1,66 @@
+ {% extends "base.html" %}
+{% block content %}
+<div class="container mt-3">
+    {% for message in messages %}
+        <p class="alert alert-success mt-3">{{ message }}</p>
+    {% endfor %}
+    <div class="row">
+        <div class="col-sm-4">
+            <h3 class="alert alert-info text-center">Treatment Master</h3>
+            {% if sel_treatments %}
+                <form action="{% url 'patientapp:update_treatment' sel_treatments.id %}" method="post">
+                    {% csrf_token %}
+                    <div>
+                        <label for="treatmentname">Treatment Name</label>
+                        <input name="treatmentname" class="form-control" placeholder="Name of the Treatment" value="{{ sel_treatments.treatmentname }}" type="text">
+                    </div>
+                    <div>
+                        <label for="description">Description</label>
+                        <textarea name="description" class="form-control" placeholder="Something About Treatment" type="text"> {{ sel_treatments.description }} </textarea>
+                    </div><br>
+                    <div>
+                        <button type="submit" class="btn btn-success">Update</button>
+                    </div>
+                </form>
+            {% else %}
+                <form action="{% url 'patientapp:add_treatment' %}" method="post">
+                    {% csrf_token %}
+                            <div>
+                                <label for="treatmentname">Treatment Name</label>
+                                <input name="treatmentname" class="form-control" placeholder="Name of the Treatment" type="text">
+                            </div>
+                            <div>
+                                <label for="description">Description</label>
+                                <textarea name="description" class="form-control" placeholder="Something about treatment" type="text"></textarea>
+                            </div><br>
+                            <div>
+                                <button type="submit" class="btn btn-success">Save</button>
+                            </div>
+                </form>
+            {% endif %}
+        </div>
+        <div class="col-sm-8">
+            <h3 class="text-center alert alert-info">Show Treatment Details</h3>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Sl.No</th>
+                        <th scope="col">Treatment Name</th>
+                        <th scope="col">Treatment Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in treatments %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ t.treatmentname }}</td>
+                            <td>{{ t.description }}</td>
+                            <td><a href="{% url 'patientapp:edit_treatment' t.id %}" class="btn btn-warning btn-sm">Edit</a></td>
+                            <td><a href="{% url 'patientapp:delete_treatment' t.id %}" class="btn btn-danger btn-sm">Delete</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div></div>
+    </div>
+{% endblock %}

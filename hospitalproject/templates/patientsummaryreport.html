@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block styles %}
+<style>
+    .container-wrapper {
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 80vh;
+background-color: #f0f0f0; /* Set your desired background color */
+}
+    .container {
+        background-color: #29B0B9 ; /* Set your desired container background color */
+        padding: 20px;
+        border-radius: 8px;
+        width: 80%;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .section {
+        border: 1px solid #14565B ; /* Set your desired border color */
+        border-radius: 8px;
+        margin-bottom: 10px;
+        padding: 2px;
+    }
+     .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .column {
+        flex: 1;
+        margin-right: 10px;
+              margin-bottom: 10px;
+    }
+     h3 {
+        color: #ffffff; /* Set your desired heading color */
+    }
+
+    p {
+        margin: 03px 0;
+    }
+    .medicine-row {
+    display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px; }
+ .medicine-row p {
+        flex: 1; /* Each paragraph takes equal space within the flex container */
+        margin-right: 10px; /* Adjust this value for space between items */
+    }
+
+    .medicine-row p:last-child {
+        margin-right: 30; /* Remove margin for the last paragraph to prevent extra space */
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container-wrapper">
+    <div class="container"  id="printable-content">
+
+        <div class="section">
+            <h3>Patient Personal Information</h3></div>
+        <div class="row">
+            <div class="column">
+                <p>Patient ID: {{ patient.patientid }}</p>
+                <p>Patient Name: {{ patient.patientname }}</p>
+            </div>
+            <div class="column">
+                <p>Age: {{ patient.age }}</p>
+                <p>Gender: {{ patient.gender }}</p></div>
+            <div class="column">
+                <p>Prescription No:{{ vitals.prescriptionno }}</p>
+                 <p>Prescription Date:{{ vitals.date}}</p>
+                <p>Doctor Name: {{ vitals.doctorname }}</p></div>
+        </div>
+        <div class="section">
+            <h3>Patient Vital Information</h3></div>
+        <div class="row">
+            <div class="column">
+                <p>Temperature: {{ vitals.temperature }}</p>
+                <p>Diastolic BP:{{ vitals.dbp }}</p>
+                <p>Reaspiratory Rate:{{ vitals.resrate}}</p>
+            </div>
+            <div class="column">
+                <p>Height: {{ vitals.height}}</p>
+                <p>Spo2:{{ vitals.spo2 }}</p>
+                <p>Systolic Bp:{{ vitals.sbp}}</p>
+            </div>
+            <div class="column">
+                <p>Pulse Rate: {{ vitals.pulserate }}</p>
+                <p>Weight:{{ vitals.weight }}</p>
+                <p>BMI: {{ vitals.bmi }}</p>
+            </div>
+        </div>
+        <div class="section">
+            <h3>Prescribed Medication</h3></div>
+
+        {% for medicine in consultation_data.consultation_medicines.all %}
+        <div class="medicine-row">
+            <p>{{ forloop.counter }}.{{ medicine.itemname }} </p><p>{{ medicine.route }} </p><p>{{ medicine.freequency }}</p><p> {{medicine.medicine_method}}</p><p> {{medicine.medstartdate}}</p>  -  <p>{{medicine.medenddate}}</p>
+        </div>
+        {% endfor %}
+        <!-- Add more fields as needed -->
+        <div class="section">
+            <h3>Prescribed Treatments</h3></div>
+        <!-- Display prescribed treatments details here -->
+        {% for treatment in consultation_data.consultation_treatments.all %}
+        <div class="medicine-row">
+         <p>{{ forloop.counter }}. {{ treatment.treatmentname }}</p><p> {{ treatment.treatmentdate }}</p><p> {{ treatment.treatmentduration }}</p>
+            </div>
+        {% endfor %}
+
+    <div class="section">
+        <h3>Patient Summary Report</h3></div>
+    <div class="row">
+        <div class="column">
+            <p>Investigation Result: {{ consultation_data.investresult }}</p>
+            <p>Instruction To Next Visit:{{consultation_data.instruction }}</p>
+            <!-- Add more fields as needed -->
+        </div>
+    </div>
+        <button id="print-button" onclick="printContent()">Print</button>
+
+</div>
+</div>
+<script>
+  function printContent() {
+        // Hide the Print button in the print window
+        var printButton = document.getElementById('print-button');
+        if (printButton) {
+            printButton.style.display = 'none';
+        }
+
+        var printWindow = window.open('', '_blank');
+        printWindow.document.open();
+        printWindow.document.write('<html><head><title>Print</title>');
+        printWindow.document.write('<style>');
+        printWindow.document.write('@page { size: A4; margin: 1cm; }');
+        printWindow.document.write('body { font-size: 12px; }'); // Adjust font size if needed
+        printWindow.document.write(document.head.innerHTML);
+        printWindow.document.write('</style>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write(document.getElementById('printable-content').outerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
+    }
+</script>
+{% endblock %}

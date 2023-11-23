@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+        <h3 class="text-center alert alert-info">Show Patient Vital Information</h3>
+<div class="container mt-3" style="max-height: 300px; overflow-y: auto;">
+    <form method="post" action="{% url 'patientapp:vital_info' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+            <button type="submit" class="btn btn-primary">Show Data</button>
+        </div>
+    </form>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Sl.no</th>
+
+              <th scope="col">Prescription Number</th>
+                 <th scope="col">id</th>
+                <th scope="col">Doctor Name</th>
+                 <th scope="col">Patient Name</th>
+                <th scope="col">Patient Id</th>
+                 <th scope="col">Age</th>
+                <th scope="col">Tempreature</th>
+                <th scope="col">Diastolic BP</th>
+                <th scope="col">Respiratory Rate</th>
+                <th scope="col">Spo2</th>
+                <th scope="col">Systolic BP</th>
+                <th scope="col">Pulse Rate</th>
+                <th scope="col">BMI</th>
+                 <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in vitals %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+             <td><a href="{% url 'patientapp:addprescription' %}?vitals_id={{ v.id }}" target="_blank">{{ v.prescriptionno }}</a></td>
+              <td>{{v.id}}</td>
+                <td>{{ v.doctorname }}</td>
+                <td>{{v.patientname}}</td>
+                <td>{{v.patientid}}</td>
+                <td>{{ v.age }}</td>
+                <td>{{ v.temperature }}</td>
+                <td>{{ v.dbp }}</td>
+                <td>{{ v.resrate }}</td>
+                <td>{{ v.spo2 }}</td>
+                <td>{{ v.sbp }}</td>
+                <td>{{ v.pulserate }}</td>
+                <td>{{ v.bmi }}</td>
+              <td style="font-weight: bold; color: green;">{{ v.status }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10">No data available for the selected date.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

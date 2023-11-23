@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-3">
+    {% for message in messages %}
+        <p class="alert alert-success mt-3">{{ message }}</p>
+    {% endfor %}
+    <div class="row">
+        <div class="col-sm-4">
+            <h3 class="alert alert-info text-center">Brand Master</h3>
+            {% if sel_brands %}
+                <form action="{% url 'hiapp:update_brand' sel_brands.id %}" method="post">
+                    {% csrf_token %}
+                    <div>
+                        <label for="brandname">Brand Name</label>
+                        <input name="brandname" class="form-control" placeholder="Brand Name" value="{{ sel_brands.brandname }}" type="text">
+                    </div>
+                    <div>
+                        <label for="branddescription">Brand Description</label>
+                        <textarea name="branddescription" class="form-control" placeholder="Brand Description" type="text"> {{ sel_brands.branddescription }} </textarea>
+                    </div><br>
+                    <div>
+                        <button type="submit" class="btn btn-success">Update Brand</button>
+                    </div>
+                </form>
+            {% else %}
+                <form action="{% url 'hiapp:add_brand' %}" method="post">
+                    {% csrf_token %}
+                            <div>
+                                <label for="brandname">Brand Name</label>
+                                <input name="brandname" class="form-control" placeholder="Brand Name" type="text">
+                            </div>
+                            <div>
+                                <label for="branddescription">Brand Description</label>
+                                <textarea name="branddescription" class="form-control" placeholder="Brand Description" type="text"></textarea>
+                            </div><br>
+                            <div>
+                                <button type="submit" class="btn btn-success">Add Brand</button>
+                            </div>
+                </form>
+            {% endif %}
+        </div>
+        <div class="col-sm-8">
+            <h3 class="text-center alert alert-info">Show Brand Information</h3>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Sl.No</th>
+                        <th scope="col">Brand Name</th>
+                        <th scope="col">Brand Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in brands %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ b.brandname }}</td>
+                            <td>{{ b.branddescription }}</td>
+                            <td><a href="{% url 'hiapp:edit_brand' b.id %}" class="btn btn-warning btn-sm">Edit</a></td>
+                            <td><a href="{% url 'hiapp:delete_brand' b.id %}" class="btn btn-danger btn-sm delete-button">Delete</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div></div>
+    </div>
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const deleteButtons = document.querySelectorAll(".delete-button");
+
+    deleteButtons.forEach(function (button) {
+      button.addEventListener("click", function (event) {
+        event.preventDefault(); // Prevent the default behavior of the link
+
+        const confirmation = confirm("Are you sure you want to delete?");
+        if (confirmation) {
+          // If the user confirms, proceed with the deletion
+          window.location = event.target.href;
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

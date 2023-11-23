@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+{% block styles %}
+<style>
+    .form-treatmentcontainer {
+           background-color: #EC7063; /* Specify your desired background color */
+           padding: 20px; /* Adjust the padding as needed */
+           border-radius: 8px; /* Optional: Add border radius for rounded corners */
+       }
+ .form-medicinecontainer {
+           background-color: #D7BDE2; /* Specify your desired background color */
+           padding: 50px; /* Adjust the padding as needed */
+           border-radius: 8px; /* Optional: Add border radius for rounded corners */
+       }
+    .form-consultationcontainer {
+           background-color: #A3E4D7; /* Specify your desired background color */
+           padding: 50px; /* Adjust the padding as needed */
+           border-radius: 8px; /* Optional: Add border radius for rounded corners */
+       }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <p class="alert alert-success mt-3">{{message}}</p>
+    {% endfor %}
+    <h3 class="text-center alert alert-info">Consultation</h3>
+</div>
+    <div class="container mt-3">
+        <form id="prescriptionform" method="post" action="{% url 'patientapp:add_prescription' %}">
+            {% csrf_token %}
+            <div class="container mt-3">
+                <div class="col-md-12 form-consultationcontainer">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+
+                            <label for="prescription_number">Prescription Number:</label>
+                            <input type="text" id="prescription_number" name="prescriptionno"
+                                   value="{{ prescription_number }}" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="cheifcomplaints">Cheif Complaints:</label>
+                            <textarea name="complaints" class="form-control"
+                                      placeholder="Specific reason/Primary symptoms that prompted to seek medication"
+                                      type="text">{{ consultation.complaints }}</textarea>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label for="presentmedicalhistory">Present Medical History:</label>
+                            <textarea name="presentmedhis" class="form-control"
+                                      placeholder="Current health status,symptoms,duration of symptoms,recent illness,injuries e.tc"
+                                      type="text">{{ consultation.presentmedhis }}</textarea>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label for="pastmedicalhistory">Past Medical History:</label>
+                            <textarea name="pastmedhis" class="form-control"
+                                      placeholder="patient has experienced in the past but may still be relevant to their current care"
+                                      type="text">{{ consultation.pastmedhis }}</textarea>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="pastsurgicalhistory">Past Surgical/Treatment History:</label>
+                            <textarea name="pastsurghis" class="form-control"
+                                      placeholder="any past surgeries or medical treatments, along with their dates, reasons, and outcomes"
+                                      type="text">{{ consultation.pastsurghis }}</textarea>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="allergies">Allergies if any:</label>
+                            <textarea name="allergies" class="form-control" placeholder="Type allergies if any"
+                                      type="text">{{ consultation.allergies }}</textarea>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="route">Investigation Result:</label>
+                            <textarea name="investresult" class="form-control" placeholder="result of Investigation"
+                                      type="text">{{ consultation.investresult }}</textarea>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="route">Instruction for next visit:</label>
+                            <textarea name="instruction" class="form-control" placeholder="comments/instructions if any"
+                                      type="text">{{ consultation.instruction }}</textarea>
+                        </div>
+                    </div></div>
+                <div class="container mt-3">
+                    <div class="row">
+                        <div class="col-md-3 form-treatmentcontainer">
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="treatmentname">Treatment Name:</label>
+                                    <select class="form-control" name="treatmentname" id="treatmentname">
+                                        <option value="">Select the Treatment</option>
+                                        {% for treatment in treatments %}
+                                        <option value="{{ treatment.id }}">{{ treatment.treatmentname }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="treatmentdate">Treatment Date:</label>
+                                    <input type="date" id="treatmentdate" name="treatmentdate">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="treatmentduration">Treatment Duration:</label>
+                                    <input type="text" id="treatmentduration" name="treatmentduration">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <button type="button" id="add-treatment-btn" class="btn btn-success">Add Treatment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                       <div class="col-md-1"></div>
+                        <div class="col-md-8 form-medicinecontainer">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="medicinename">Medicine Name:</label>
+                                    <input type="text" id="itemname" name="itemname" list="medicine-list"
+                                           placeholder="Medicine Name ">
+                                    <datalist id="medicine-list">
+                                        {% for item in items %}
+                                        <option value="{{ item.itemname }}">
+                                            {% endfor %}
+                                    </datalist>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="route">Route of Medication:</label>
+                                    <select name="route" id="route" class="form-control">
+                                        <option value="" disabled selected>Select route </option>
+                                        <option value="Oral">Oral</option>
+                                        <option value="Sublingual">Sublingual</option>
+                                        <option value="Buccal">Buccal</option>
+                                        <option value="Intravenous">Intravenous</option>
+                                        <option value="intramascular">Intramascular</option>
+                                        <option value="Subcutaneous">Subcutaneous</option>
+                                        <option value="Topical">Topical</option>
+                                        <option value="Transdermal">Transdermal</option>
+                                        <option value="Inhalation">Inhalation</option>
+                                        <option value="Rectal">Rectal</option>
+                                        <option value="Vaginal">Vaginal</option>
+                                    </select>
+                                </div>
+
+                                <!--            <input type="text" id="route" name="route" placeholder="Route of medication">-->
+
+                                <div class="form-group col-md-4">
+                                    <label for="route">Freequency:</label>
+                                    <!--            <input type="text" id="freequency" name="freequency" placeholder="Freequency of medication">-->
+                                    <select name="freequency" id="freequency" class="form-control">
+                                        <option value="" disabled selected>Select freequncy</option>
+                                        <option value="Daily">Daily</option>
+                                        <option value="BID">BID</option>
+                                        <option value="TID">TID</option>
+                                        <option value="HS">HS</option>
+                                        <option value="Q6H">Q6H</option>
+                                        <option value="Q8H">Q8H</option>
+                                        <option value="Q12h">Q12H</option>
+                                        <option value="Once Weekly">Once Weekly</option>
+                                        <option value="PRN">PRN</option>
+                                        <option value="QOD/EOD">QOD/EOD</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="form-row">
+                                 <div class="form-group col-md-4">
+                        <label for="medicine_method">Medicine Taken:</label><br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="medicine_method" id="ac" value="ac">
+                            <label class="form-check-label" for="ac">AC</label>
+                        </div>
+                                     <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="medicine_method" id="pc" value="pc">
+                            <label class="form-check-label" for="pc">PC</label>
+                        </div>
+                                     </div>
+                                <div class="form-group col-md-4">
+                                    <label for="route">Medicine startdate:</label>
+                                    <input type="date" id="medstartdate" name="medstartdate">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="route">Medicine Enddate:</label>
+                                    <input type="date" id="medenddate" name="medenddate">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <button type="button" id="add-medicine-btn" class="btn btn-success">Add Medicine
+                                    </button>
+                                </div>
+                                <div class="form-group col-md-4">
+                                </div>
+                                <div class="form-group col-md-4">
+                        <button type="submit" class="btn btn-primary">Save Prescription</button>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--         <div class="form-group col-md-3">-->
+                    <!--            <label for="route">Investigation Result:</label>-->
+                    <!--            <textarea name="investresult" class="form-control" placeholder="result of Investigation" type="text"></textarea>-->
+                    <!--        </div>-->
+                    <!--        <div class="form-group col-md-3">-->
+                    <!--            <label for="route">Instruction for next visit:</label>-->
+                    <!--            <textarea name="instruction" class="form-control" placeholder="comments/instructions if any" type="text"></textarea>-->
+                    <!--        </div>-->
+                    <input type="hidden" id="treatment_data" name="treatment_data" value="">
+                    <input type="hidden" id="medicine_data" name="medicine_data" value="">
+
+                    <!-- Add other prescription fields here, e.g., medication, instructions, etc. -->
+<!--                    <div class="form-group col-md-3">-->
+<!--                        <button type="submit" class="btn btn-primary">Save Prescription</button>-->
+<!--                    </div>-->
+                    <!--                 <div class="form-group col-md-3">-->
+                    <!--               <button type="button" id="add-treatment-btn" class="btn btn-success">Add Treatment</button>-->
+                    <!--                 </div>-->
+                    <!--                 <div class="form-group col-md-3">-->
+                    <!--                <button type="button" id="add-medicine-btn" class="btn btn-success">Add Medicine</button>-->
+                </div> </div>         <!--                 </div>-->
+        </form>
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>Treatment Data</h2>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Treatment Name</th>
+                            <th>Treatment Date</th>
+                            <th>Treatment Duration</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="treatment-table">
+                         {% for treatment in treatment_data %}
+            <tr>
+                <td>{{ treatment.treatmentname }}</td>
+                <td>{{ treatment.treatmentdate }}</td>
+                <td>{{ treatment.treatmentduration }}</td>
+                <td>
+                     <form method="post" action="{% url 'patientapp:delete_treatment' treatment.id %}" onsubmit="return confirm('Are you sure you want to delete this treatment?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Remove</button>
+                            </form></td>
+            </tr>
+        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h2>Medicine Data</h2>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Medicine Name</th>
+                            <th>Roue</th>
+                            <th>Freequency</th>
+                            <th>Medicine Taken</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                             <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="medicine-table">
+                         {% for medicine in medicine_data %}
+            <tr>
+                <td>{{ medicine.itemname }}</td>
+                <td>{{ medicine.route }}</td>
+                <td>{{ medicine.freequency }}</td>
+                <td>{{ medicine.medicine_method }}</td>
+                <td>{{ medicine.medstartdate }}</td>
+                <td>{{ medicine.medenddate }}</td>
+                 <td>
+                     <form method="post" action="{% url 'patientapp:delete_medicine' medicine.id %}" onsubmit="return confirm('Are you sure you want to delete this treatment?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Remove</button>
+                            </form></td>
+            </tr>
+        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function() {
+                var treatmentData = [];
+                var medicineData = [];
+                $("#add-treatment-btn").click(function() {
+                    var treatmentName = $("#treatmentname option:selected").text();
+                    console.log("Treatment Name:", treatmentName);
+
+                    var treatmentDate = $("#treatmentdate").val();
+                    var treatmentDuration = $("#treatmentduration").val();
+                    console.log("Treatment Data:", treatmentName, treatmentDate, treatmentDuration);
+
+                    if (treatmentName && treatmentDate && treatmentDuration) {
+                        var newRow = $("<tr>");
+                        newRow.append("<td>" + treatmentName + "</td>");
+                        newRow.append("<td>" + treatmentDate + "</td>");
+                        newRow.append("<td>" + treatmentDuration + "</td>");
+                        newRow.append('<td><button class="btn btn-danger remove-row">-</button></td>');
+                        $("#treatment-table").append(newRow);
+                        $("#treatmentname").val("");
+                        $("#treatmentdate").val("");
+                        $("#treatmentduration").val("");
+                         treatmentData.push({
+                            treatmentname: treatmentName,
+                            treatmentdate: treatmentDate,
+                            treatmentduration: treatmentDuration
+                        });
+
+                    }
+                });
+
+                $("#add-medicine-btn").click(function() {
+                    var medicineName = $("#itemname").val();
+                    var route = $("#route").val();
+                    var freequency = $("#freequency").val();
+                    var medicine_method = $("input[name='medicine_method']:checked").val();
+                    var startDate = $("#medstartdate").val();
+                    var endDate = $("#medenddate").val();
+                    console.log("Medicine Data:", medicineName, route, freequency, medicine_method, startDate, endDate);
+
+
+                    if (medicineName && route && freequency && medicine_method && startDate && endDate) {
+                        var newRow = $("<tr>");
+                        newRow.append("<td>" + medicineName + "</td>");
+                        newRow.append("<td>" + route + "</td>");
+                        newRow.append("<td>" + freequency + "</td>");
+                        newRow.append("<td>" + medicine_method + "</td>");
+                        newRow.append("<td>" + startDate + "</td>");
+                        newRow.append("<td>" + endDate + "</td>");
+                        newRow.append('<td><button class="btn btn-danger remove-row">-</button></td>');
+                        $("#medicine-table").append(newRow);
+                        $("#itemname").val("");
+                        $("#route").val("");
+                        $("#freequency").val("");
+                         $("#medicine_method").val("");
+                        $("#medstartdate").val("");
+                        $("#medenddate").val("");
+                         medicineData.push({
+                            itemname: medicineName,
+                            route: route,
+                            freequency: freequency,
+                            medicine_method: medicine_method,
+                            medstartdate: startDate,
+                            medenddate: endDate
+                        });
+
+                    }
+                });
+
+               $("#treatment-table").on("click", ".remove-row", function() {
+                    $(this).closest("tr").remove();
+                    treatmentData.pop();
+                });
+
+                $("#medicine-table").on("click", ".remove-row", function() {
+                    $(this).closest("tr").remove();
+                    medicineData.pop();
+
+                });
+                 $("#prescriptionform").submit(function () {
+                    $("<input>")
+                     .attr("type", "hidden")
+                    .attr("name", "treatment_data")
+                    .val(JSON.stringify(treatmentData))
+                    .appendTo(this);
+
+                $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "medicine_data")
+                    .val(JSON.stringify(medicineData))
+                    .appendTo(this);
+                     console.log("Treatment Data:", JSON.stringify(treatmentData));
+    console.log("Medicine Data:", JSON.stringify(medicineData));
+
+                    return true; // Allow the form to be submitted
+                });
+            });
+        </script>
+        {% endblock %}
